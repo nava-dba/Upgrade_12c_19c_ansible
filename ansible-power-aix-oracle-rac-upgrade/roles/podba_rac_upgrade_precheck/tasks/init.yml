@@ -1,0 +1,48 @@
+---
+# Copyright (c) IBM Corporation 2021
+
+# Common vars used by multiple roles
+
+# tasks for init
+
+- name: Set fact init_done
+  set_fact:
+    init_done: true
+
+- name: Set fact rac_hosts
+  set_fact:
+    rac_hosts: "{% for h in config.networks %}{{ rac_hosts | default('') + h.host + ' '}}{% endfor %}"
+  failed_when: not config.networks is defined
+  when: not rac_hosts is defined
+
+- name: Set fact rac_nodes
+  set_fact:
+    rac_nodes: "{% for h in config.networks %}{{ rac_nodes | default('') + h.ora_pub.split().0 + ' ' }}{% endfor %}"
+  failed_when: not config.networks is defined
+  when: not rac_nodes is defined
+
+- name: Set fact num_nodes
+  set_fact:
+    num_nodes: "{{ config.networks | length }}"
+
+- name: Set fact first_host
+  set_fact:
+    first_host: "{{ rac_hosts.split(' ') | first }}"
+  failed_when: not rac_hosts is defined
+  when: not first_host is defined
+
+- name: Set fact last_host
+  set_fact:
+    last_host: "{{ rac_hosts.strip().split(' ') | last }}"
+  failed_when: not rac_hosts is defined
+  when: not last_host is defined
+
+- name: Creating Temp Directory
+  ansible.builtin.file:
+    dest: "{{ item }}"
+    mode: '0777'
+    owner: "{{ db_oracle_user }}"
+    group: "{{ db_oinstall_group }}"
+    state: directory
+  loop: "{{ directories | product(['done', 'scripts', 'logs']) | map('join', '/') }}"
+  changed_when: false

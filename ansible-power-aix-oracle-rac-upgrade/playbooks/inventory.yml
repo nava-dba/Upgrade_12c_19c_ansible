@@ -1,0 +1,3 @@
+[orac]
+p227n242.pbm.ihost.com ansible_host=129.40.76.242
+p227n243.pbm.ihost.com ansible_host=129.40.76.243
