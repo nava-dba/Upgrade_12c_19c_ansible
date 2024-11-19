@@ -13,7 +13,7 @@
 
 
 - name: Run Grid Upgrade Script on first node
-  hosts: orac 
+  hosts: all 
   remote_user: root
   gather_facts: False
   vars_files:
